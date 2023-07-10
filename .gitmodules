@@ -1,0 +1,3 @@
+[submodule "ST-PX4-Autopilot-Fork"]
+	path = ST-PX4-Autopilot-Fork
+	url = https://github.com/g-rahul/ST-PX4-Autopilot-Fork.git
