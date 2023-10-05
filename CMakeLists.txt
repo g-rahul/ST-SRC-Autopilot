@@ -1,17 +1,40 @@
+#=============================================================================
+# Initial Configuration
+#======================
+
 cmake_minimum_required(VERSION 3.2...3.15)
 
+# Platform Path Config
 set(PLAT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}" CACHE FILEPATH "PLAT source directory" FORCE)
 set(PLAT_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE FILEPATH "PLAT binary directory" FORCE)
+set(PX4_SOURCE_DIR ${PLAT_SOURCE_DIR}/ST-PX4-Autopilot-Fork/ CACHE FILEPATH "PX4 source directory" FORCE)
 
-set(vendor "holybro" CACHE FILEPATH "PLAT source directory" FORCE)
-set(model  "kakuteh7v2" CACHE FILEPATH "PLAT binary directory" FORCE)
-set(PX4_PLATFORM  "nuttx" CACHE FILEPATH "PLAT binary directory" FORCE)
+# Platform Include Paths
+list(APPEND CMAKE_MODULE_PATH ${PLAT_SOURCE_DIR}/cmake)
 
+# Find Python
+find_package(PythonInterp 3)
+# We have a custom error message to tell users how to install python3.
+if(NOT PYTHONINTERP_FOUND)
+	message(FATAL_ERROR "Python 3 not found. Please install Python 3:\n"
+		"    Ubuntu: sudo apt install python3 python3-dev python3-pip\n"
+		"    macOS: brew install python")
+endif()
 
-project(ST-PX4-DevPlat CXX C ASM
-        VERSION 1.0
-        DESCRIPTION "Board bring-up dev platform"
-)
+#Include PX4 Board parser config and initial PX4 Config files
+include(px4_config)
+include(kconfig)
+message(STATUS "PX4 config: ${PX4_CONFIG}")
+message(STATUS "PX4 platform: ${PX4_PLATFORM}")
+
+include(px4_impl_os.cmake)
+#list(APPEND CMAKE_MODULE_PATH ${PX4_SOURCE_DIR}/platforms/${PX4_PLATFORM}/cmake)
+include(init)
+
+#=============================================================================
+# Project Specific
+#==================
+project(ST-PX4-BUPLAT CXX C ASM)
 
 # CMake build type (Debug Release RelWithDebInfo MinSizeRel Coverage)
 if(NOT CMAKE_BUILD_TYPE)
@@ -38,16 +61,37 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PLAT_BINARY_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${PLAT_BINARY_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${PLAT_BINARY_DIR})
 
-include(cmake/plat_config.cmake)
+
+
+#=============================================================================
+# get chip and chip manufacturer
+#
+px4_os_determine_build_chip()
+if(NOT PX4_CHIP_MANUFACTURER)
+	message(FATAL_ERROR "px4_os_determine_build_chip() needs to set PX4_CHIP_MANUFACTURER")
+endif()
+if(NOT PX4_CHIP)
+	message(FATAL_ERROR "px4_os_determine_build_chip() needs to set PX4_CHIP")
+endif()
 
 
 #=============================================================================
 # build flags
-#
+##===========
 include(px4_add_common_flags)
 px4_add_common_flags()
 px4_os_add_flags()
 
+#=============================================================================
+# Nuttx Kernel Build Hooks
+##========================
+# firmware added last to generate the builtin for included modules
+add_subdirectory(platforms/${PX4_PLATFORM})
+
+#[[
+#=============================================================================
+# Test Platform Config
+##===========
 
 include_directories(
         src
@@ -67,3 +111,4 @@ set(CMAKE_SKIP_RPATH ON)
 set(CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_LINKER} ${AC_LINKER_FLAGS} -o ${EXE_NAME}.elf <OBJECTS> <LINK_LIBRARIES>")
 set(BUILD_SHARED_LIBS OFF)
 add_subdirectory(src)
+]]

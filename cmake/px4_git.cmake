@@ -1,6 +1,6 @@
 ############################################################################
 #
-#   Copyright (c) 2019 PX4 Development Team. All rights reserved.
+# Copyright (c) 2017 PX4 Development Team. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -31,15 +31,61 @@
 #
 ############################################################################
 
+# cmake include guard
+if(px4_git_included)
+	return()
+endif(px4_git_included)
+set(px4_git_included true)
 
+#=============================================================================
+#
+#	px4_add_git_submodule
+#
+#	This function add a git submodule target.
+#
+#	Usage:
+#		px4_add_git_submodule(TARGET <target> PATH <path>)
+#
+#	Input:
+#		PATH		: git submodule path
+#
+#	Output:
+#		TARGET		: git target
+#
+#	Example:
+#		px4_add_git_submodule(TARGET git_nuttx PATH "NuttX")
+#
+function(px4_add_git_submodule)
+	px4_parse_function_args(
+		NAME px4_add_git_submodule
+		ONE_VALUE TARGET PATH
+		REQUIRED TARGET PATH
+		ARGN ${ARGN})
 
-if(ARCHITECTURE)
-set(CMAKE_SYSTEM_PROCESSOR ${ARCHITECTURE} CACHE INTERNAL "system processor" FORCE)
-endif()
+	set(REL_PATH)
 
-set(CMAKE_TOOLCHAIN_FILE Toolchain-${TOOLCHAIN} CACHE INTERNAL "toolchain file" FORCE)
+	if(IS_ABSOLUTE ${PATH})
+		file(RELATIVE_PATH REL_PATH ${PX4_SOURCE_DIR} ${PATH})
+	else()
+		file(RELATIVE_PATH REL_PATH ${PX4_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/${PATH})
+	endif()
 
+	execute_process(
+		COMMAND Tools/check_submodules.sh ${REL_PATH}
+		WORKING_DIRECTORY ${PX4_SOURCE_DIR}
+		)
 
-set(PLAT_BOARD_DIR "${PLAT_SOURCE_DIR}/ST-PX4-Autopilot-Fork/boards/${vendor}/${model}" CACHE STRING "PX4 board directory" FORCE)
-set(BOARD_DEFCONFIG ${PLAT_CONFIG_FILE} CACHE FILEPATH "path to defconfig" FORCE)
-set(BOARD_CONFIG ${PLAT_BINARY_DIR}/boardconfig CACHE FILEPATH "path to config" FORCE)
+	string(REPLACE "/" "_" NAME ${PATH})
+	string(REPLACE "." "_" NAME ${NAME})
+
+	add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/git_init_${NAME}.stamp
+		COMMAND Tools/check_submodules.sh ${REL_PATH}
+		COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_BINARY_DIR}/git_init_${NAME}.stamp
+		DEPENDS ${PX4_SOURCE_DIR}/.gitmodules ${PATH}/.git
+		COMMENT "git submodule ${REL_PATH}"
+		WORKING_DIRECTORY ${PX4_SOURCE_DIR}
+		USES_TERMINAL
+		)
+
+	add_custom_target(${TARGET} DEPENDS git_init_${NAME}.stamp)
+endfunction()

@@ -40,7 +40,7 @@
 #	Usage:
 #		px4_add_common_flags()
 #
-function(plat_add_common_flags)
+function(px4_add_common_flags)
 
 	add_compile_options(
 		-g # always build debug symbols
@@ -176,19 +176,19 @@ function(plat_add_common_flags)
 		${PLAT_BINARY_DIR}
 		${PLAT_BINARY_DIR}/src/lib
 
-		${PLAT_SOURCE_DIR}/platforms/${PX4_PLATFORM}/src/px4/${PX4_CHIP_MANUFACTURER}/${PX4_CHIP}/include
-		${PLAT_SOURCE_DIR}/platforms/${PX4_PLATFORM}/src/px4/common/include
-		${PLAT_SOURCE_DIR}/platforms/common
-		${PLAT_SOURCE_DIR}/platforms/common/include
+		${PX4_SOURCE_DIR}/platforms/${PX4_PLATFORM}/src/px4/${PX4_CHIP_MANUFACTURER}/${PX4_CHIP}/include
+		${PX4_SOURCE_DIR}/platforms/${PX4_PLATFORM}/src/px4/common/include
+		${PX4_SOURCE_DIR}/platforms/common
+		${PX4_SOURCE_DIR}/platforms/common/include
 
-		${PLAT_SOURCE_DIR}/src
-		${PLAT_SOURCE_DIR}/src/include
-		${PLAT_SOURCE_DIR}/src/lib
-		${PLAT_SOURCE_DIR}/src/lib/matrix
-		${PLAT_SOURCE_DIR}/src/modules
+		${PX4_SOURCE_DIR}/src
+		${PX4_SOURCE_DIR}/src/include
+		${PX4_SOURCE_DIR}/src/lib
+		${PX4_SOURCE_DIR}/src/lib/matrix
+		${PX4_SOURCE_DIR}/src/modules
 	)
-	if(EXISTS ${PLAT_BOARD_DIR}/include)
-		include_directories(${PlAT_BOARD_DIR}/include)
+	if(EXISTS ${PX4_BOARD_DIR}/include)
+		include_directories(${PX4_BOARD_DIR}/include)
 	endif()
 
 	add_definitions(
