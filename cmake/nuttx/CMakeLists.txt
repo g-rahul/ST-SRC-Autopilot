@@ -99,13 +99,13 @@ else()
 endif()
 
 list(APPEND nuttx_libs
-	nuttx_boards
-	nuttx_drivers
-	nuttx_fs
-	nuttx_sched
-	nuttx_crypto
-	nuttx_binfmt
-	nuttx_xx
+	nuttx_boards   #nx
+	nuttx_drivers  #nx
+	nuttx_fs       #nx
+	nuttx_sched    #nx
+	nuttx_crypto   #nx
+	nuttx_binfmt   #nx
+	nuttx_xx       #nx
 	)
 
 if (NOT CONFIG_BUILD_FLAT)
@@ -118,15 +118,15 @@ if (NOT CONFIG_BUILD_FLAT)
 		)
 else()
 	list(APPEND nuttx_libs
-		nuttx_apps
-		nuttx_arch
-		nuttx_mm
-		nuttx_c
+		nuttx_apps #nx
+		nuttx_arch #nx
+		nuttx_mm   #nx
+		nuttx_c    #nx
 		)
 endif()
 
 if(CONFIG_NET)
-	list(APPEND nuttx_libs nuttx_net)
+	list(APPEND nuttx_libs nuttx_net) #nx
 	target_link_libraries(nuttx_fs INTERFACE nuttx_net)
 endif()
 
@@ -200,7 +200,7 @@ if (NOT CONFIG_BUILD_FLAT)
 		nuttx_xx
 		)
 
-	target_link_libraries(nuttx_c INTERFACE nuttx_proxies)
+	target_link_libraries(nuttx_c INTERFACE nuttx_proxies) #nx
 
 	target_link_libraries(px4 PRIVATE
 
@@ -242,19 +242,19 @@ if (NOT CONFIG_BUILD_FLAT)
 
 else()
 
-	target_link_libraries(nuttx_c INTERFACE nuttx_sched) # nxsched_get_streams
-
+	target_link_libraries(nuttx_c INTERFACE nuttx_sched) # nxsched_get_streams #nx
+#[[
 	target_link_libraries(nuttx_arch
 		INTERFACE
-			drivers_board
-			arch_hrt
-			arch_board_reset
+			drivers_board    #px4 drivers
+			arch_hrt         #px4 common src
+			arch_board_reset #px4 common reset
 	)
-
-	target_link_libraries(nuttx_c INTERFACE nuttx_drivers)
-	target_link_libraries(nuttx_drivers INTERFACE nuttx_c)
-	target_link_libraries(nuttx_xx INTERFACE nuttx_c)
-	target_link_libraries(nuttx_fs INTERFACE nuttx_c)
+]]
+	target_link_libraries(nuttx_c INTERFACE nuttx_drivers) #nx
+	target_link_libraries(nuttx_drivers INTERFACE nuttx_c) #nx
+	target_link_libraries(nuttx_xx INTERFACE nuttx_c)      #nx
+	target_link_libraries(nuttx_fs INTERFACE nuttx_c)      #nx
 
 	target_link_libraries(px4 PRIVATE
 
@@ -295,7 +295,7 @@ else()
 	)
 
 endif()
-
+#[[
 # create .px4 with parameter and airframe metadata
 if (TARGET parameters_xml AND TARGET airframes_xml)
 
@@ -327,6 +327,7 @@ if (TARGET parameters_xml AND TARGET airframes_xml)
 	endif()
 
 endif()
+]]
 
 if(${CONFIG_NSH_LIBRARY} MATCHES "y")
 	if(${CONFIG_NSH_DISABLE_ECHO} MATCHES "y")
@@ -375,7 +376,7 @@ endif()
 
 
 # debugger helpers
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Debug/gdbinit.in ${PX4_BINARY_DIR}/.gdbinit)
+#configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Debug/gdbinit.in ${PX4_BINARY_DIR}/.gdbinit)
 
 # vscode launch.json
 #  skip if built within another cmake project (eg px4_io-v2 with px4_fmu-v5)
@@ -484,12 +485,15 @@ if(NOT NUTTX_DIR MATCHES "external")
 	endif()
 endif()
 
+#[[
+
 add_custom_target(debug
 	COMMAND ${CMAKE_GDB} -iex 'set auto-load safe-path ${PX4_BINARY_DIR}' $<TARGET_FILE:px4>
 	DEPENDS px4 ${PX4_BINARY_DIR}/.gdbinit
 	WORKING_DIRECTORY ${PX4_BINARY_DIR}
 	USES_TERMINAL
 )
+
 
 include(blackmagic)
 include(jlink)
@@ -499,3 +503,4 @@ include(stack_check)
 if(EXISTS "${PX4_BOARD_DIR}/cmake/upload.cmake")
 	include(${PX4_BOARD_DIR}/cmake/upload.cmake)
 endif()
+]]
