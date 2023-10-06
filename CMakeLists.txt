@@ -85,8 +85,9 @@ px4_os_add_flags()
 #=============================================================================
 # Nuttx Kernel Build Hooks
 ##========================
+
 # firmware added last to generate the builtin for included modules
-add_subdirectory(platforms/${PX4_PLATFORM})
+add_subdirectory(${PLAT_SOURCE_DIR}/cmake/${PX4_PLATFORM})
 
 #[[
 #=============================================================================

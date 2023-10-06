@@ -42,7 +42,7 @@ set(FW_NAME ${PX4_BOARD_VENDOR}_${PX4_BOARD_MODEL}_${PX4_BOARD_LABEL}.elf)
 set_target_properties(px4 PROPERTIES OUTPUT_NAME ${FW_NAME})
 add_dependencies(px4 git_nuttx)
 
-get_property(module_libraries GLOBAL PROPERTY PX4_MODULE_LIBRARIES)
+#get_property(module_libraries GLOBAL PROPERTY PX4_MODULE_LIBRARIES)
 
 if (NOT CONFIG_BUILD_FLAT)
 	add_executable(px4_kernel ${PX4_SOURCE_DIR}/platforms/common/empty.c)
