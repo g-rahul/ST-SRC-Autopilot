@@ -190,8 +190,8 @@ function(px4_os_prebuild_targets)
 		set(NUTTX_CONFIG "nsh" CACHE INTERNAL "NuttX config" FORCE)
 	endif()
 
-	add_library(prebuild_targets INTERFACE)
-	target_link_libraries(prebuild_targets INTERFACE nuttx_xx m gcc)
-	add_dependencies(prebuild_targets DEPENDS nuttx_context uorb_headers)
+	#add_library(prebuild_targets INTERFACE)
+	#target_link_libraries(prebuild_targets INTERFACE nuttx_xx m gcc)
+	#add_dependencies(prebuild_targets DEPENDS nuttx_context uorb_headers)
 
 endfunction()

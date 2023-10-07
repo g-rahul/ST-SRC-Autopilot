@@ -107,9 +107,9 @@ if (NOT CONFIG_BUILD_FLAT)
 			set(kernel_builtin_apps_decl_string "${kernel_builtin_apps_decl_string}int ${MAIN}_main(int argc, char *argv[]);\n")
 		endif()
 	endforeach()
-
-	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/px4_kernel.bdat.in ${CMAKE_CURRENT_BINARY_DIR}/px4_kernel.bdat)
-	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/px4_kernel.pdat.in ${CMAKE_CURRENT_BINARY_DIR}/px4_kernel.pdat)
+	
+	configure_file(${PX4_SOURCE_DIR}/platforms/nuttx/NuttX/px4_kernel.bdat.in ${CMAKE_CURRENT_BINARY_DIR}/px4_kernel.bdat)
+	configure_file(${PX4_SOURCE_DIR}/platforms/nuttx/NuttX/px4_kernel.pdat.in ${CMAKE_CURRENT_BINARY_DIR}/px4_kernel.pdat)
 
 	add_custom_command(OUTPUT ${KERNEL_BUILTIN_DIR}/kernel_builtin_list.h ${KERNEL_BUILTIN_DIR}/kernel_builtin_proto.h
 		WORKING_DIRECTORY  ${KERNEL_BUILTIN_DIR}
@@ -122,8 +122,8 @@ if (NOT CONFIG_BUILD_FLAT)
 
 endif() # NOT CONFIG_BUILD_FLAT
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/px4.bdat.in ${CMAKE_CURRENT_BINARY_DIR}/px4.bdat)
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/px4.pdat.in ${CMAKE_CURRENT_BINARY_DIR}/px4.pdat)
+configure_file(${PX4_SOURCE_DIR}/platforms/nuttx/NuttX/px4.bdat.in ${CMAKE_CURRENT_BINARY_DIR}/px4.bdat)
+configure_file(${PX4_SOURCE_DIR}/platforms/nuttx/NuttX/px4.pdat.in ${CMAKE_CURRENT_BINARY_DIR}/px4.pdat)
 
 # APPS
 
@@ -158,8 +158,8 @@ function(add_nuttx_dir nuttx_lib nuttx_lib_dir kernel extra target)
 	endif()
 
 	file(GLOB_RECURSE nuttx_lib_files LIST_DIRECTORIES false
-		${CMAKE_CURRENT_SOURCE_DIR}/nuttx/${nuttx_lib_dir}/*.c
-		${CMAKE_CURRENT_SOURCE_DIR}/nuttx/${nuttx_lib_dir}/*.h
+	    ${PX4_SOURCE_DIR}/platforms/nuttx/NuttX/nuttx/${nuttx_lib_dir}/*.c
+		${PX4_SOURCE_DIR}/platforms/nuttx/NuttX/nuttx/${nuttx_lib_dir}/*.h
 	)
 
 	add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/nuttx/${nuttx_lib_dir}/lib${nuttx_lib}.a

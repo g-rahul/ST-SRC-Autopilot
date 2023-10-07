@@ -1,5 +1,5 @@
 set(BOARD_DEFCONFIG ${PX4_CONFIG_FILE} CACHE FILEPATH "path to defconfig" FORCE)
-set(BOARD_CONFIG ${PX4_BINARY_DIR}/boardconfig CACHE FILEPATH "path to config" FORCE)
+set(BOARD_CONFIG ${PLAT_BINARY_DIR}/boardconfig CACHE FILEPATH "path to config" FORCE)
 
 execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "import menuconfig" RESULT_VARIABLE ret)
 if(ret EQUAL "1")
@@ -51,11 +51,11 @@ if(EXISTS ${BOARD_DEFCONFIG})
 			OUTPUT_VARIABLE DUMMY_RESULTS
 		)
 	endif()
-#[[
+
     # Generate header file for C/C++ preprocessor
     execute_process(
 	COMMAND ${CMAKE_COMMAND} -E env ${COMMON_KCONFIG_ENV_SETTINGS}
-		${GENCONFIG_PATH} --header-path ${PX4_BINARY_DIR}/px4_boardconfig.h
+		${GENCONFIG_PATH} --header-path ${PLAT_BINARY_DIR}/px4_boardconfig.h
 	WORKING_DIRECTORY ${PX4_SOURCE_DIR}
 	OUTPUT_VARIABLE DUMMY_RESULTS
 	)
@@ -227,7 +227,7 @@ if(EXISTS ${BOARD_DEFCONFIG})
 		endif()
 	    endforeach()
 	endif()
-]]
+
 
 	if(PLATFORM)
 		# set OS, and append specific platform module path
@@ -265,7 +265,7 @@ if(EXISTS ${BOARD_DEFCONFIG})
 	list(APPEND romfs_extra_dependencies component_general_json)
 	set(config_romfs_extra_files ${romfs_extra_files} CACHE INTERNAL "extra ROMFS files" FORCE)
 	set(config_romfs_extra_dependencies ${romfs_extra_dependencies} CACHE INTERNAL "extra ROMFS deps" FORCE)
-
+]]
 	if(SERIAL_PORTS)
 		set(board_serial_ports ${SERIAL_PORTS} PARENT_SCOPE)
 	endif()
@@ -314,7 +314,7 @@ if(EXISTS ${BOARD_DEFCONFIG})
 	if(SERIAL_EXT2)
 		list(APPEND board_serial_ports EXT2:${SERIAL_EXT2})
 	endif()
-
+#[[
 	# ROMFS
 	if(ROMFSROOT)
 		set(config_romfs_root ${ROMFSROOT} CACHE INTERNAL "ROMFS root" FORCE)
@@ -331,7 +331,7 @@ if(EXISTS ${BOARD_DEFCONFIG})
 	if(UAVCAN_TIMER_OVERRIDE)
 		set(config_uavcan_timer_override ${UAVCAN_TIMER_OVERRIDE} CACHE INTERNAL "UAVCAN TIMER OVERRIDE" FORCE)
 	endif()
-
+]]
 	# OPTIONS
 
 	if(CONSTRAINED_FLASH)
@@ -396,7 +396,7 @@ if(EXISTS ${BOARD_DEFCONFIG})
 
 	set(config_module_list ${config_module_list})
 	set(config_kernel_list ${config_kernel_list})
-]]
+
 endif()
 
 #[[

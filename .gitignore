@@ -1,0 +1,22 @@
+#Build Dir
+build/
+ST-PX4-Autopilot-Fork/
+
+# Ignore vim files:
+*.swp
+*.swo
+
+#Ignore Cmake Files
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
+
+

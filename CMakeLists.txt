@@ -3,17 +3,24 @@
 #======================
 
 cmake_minimum_required(VERSION 3.2...3.15)
+message("***** ST-AUTOPILOT Platform Build *****")
 
 # Platform Path Config
 set(PLAT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}" CACHE FILEPATH "PLAT source directory" FORCE)
 set(PLAT_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE FILEPATH "PLAT binary directory" FORCE)
-set(PX4_SOURCE_DIR ${PLAT_SOURCE_DIR}/ST-PX4-Autopilot-Fork/ CACHE FILEPATH "PX4 source directory" FORCE)
+message("Platform Source Dir: ${PLAT_SOURCE_DIR}")
+message("Platform Build Dir:  ${PLAT_BINARY_DIR}")
+set(PX4_SOURCE_DIR "${PLAT_SOURCE_DIR}/ST-PX4-Autopilot-Fork/" CACHE FILEPATH "PX4 source directory" FORCE)
+message("PX4_SOURCE_DIR ${PX4_SOURCE_DIR}")
 
 # Platform Include Paths
 list(APPEND CMAKE_MODULE_PATH ${PLAT_SOURCE_DIR}/cmake)
+include(px4_parse_function_args)
+include(px4_git)
 
 # Find Python
 find_package(PythonInterp 3)
+
 # We have a custom error message to tell users how to install python3.
 if(NOT PYTHONINTERP_FOUND)
 	message(FATAL_ERROR "Python 3 not found. Please install Python 3:\n"
@@ -27,7 +34,7 @@ include(kconfig)
 message(STATUS "PX4 config: ${PX4_CONFIG}")
 message(STATUS "PX4 platform: ${PX4_PLATFORM}")
 
-include(px4_impl_os.cmake)
+include(px4_impl_os)
 #list(APPEND CMAKE_MODULE_PATH ${PX4_SOURCE_DIR}/platforms/${PX4_PLATFORM}/cmake)
 include(init)
 

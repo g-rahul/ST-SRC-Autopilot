@@ -53,7 +53,7 @@ if (NOT CONFIG_BUILD_FLAT)
 endif()
 
 # build NuttX
-add_subdirectory(NuttX ${PX4_BINARY_DIR}/NuttX)
+add_subdirectory(NuttX ${PLAT_BINARY_DIR}/NuttX)
 
 # check that CONFIG_ARCH_BOARD_CUSTOM_DIR is in PX4_BOARD_DIR
 if(CONFIG_ARCH_BOARD_CUSTOM_DIR_RELPATH)
@@ -130,17 +130,17 @@ if(CONFIG_NET)
 	target_link_libraries(nuttx_fs INTERFACE nuttx_net)
 endif()
 
-file(RELATIVE_PATH PX4_BINARY_DIR_REL ${CMAKE_CURRENT_BINARY_DIR} ${PX4_BINARY_DIR})
+file(RELATIVE_PATH PX4_BINARY_DIR_REL ${CMAKE_CURRENT_BINARY_DIR} ${PLAT_BINARY_DIR})
 
 # only in the cygwin environment: convert absolute linker script path to mixed windows (C:/...)
 # because even relative linker script paths are different for linux, mac and windows
 CYGPATH(NUTTX_CONFIG_DIR NUTTX_CONFIG_DIR_CYG)
 
 if((DEFINED ENV{SIGNING_TOOL}) AND (NOT NUTTX_DIR MATCHES "external"))
-	set(PX4_BINARY_OUTPUT ${PX4_BINARY_DIR}/${PX4_CONFIG}_unsigned.bin)
+	set(PX4_BINARY_OUTPUT ${PLAT_BINARY_DIR}/${PX4_CONFIG}_unsigned.bin)
 
 	add_custom_command(OUTPUT ${PX4_BINARY_DIR_REL}/${PX4_CONFIG}.bin
-		COMMAND $ENV{SIGNING_TOOL} $ENV{SIGNING_ARGS} ${PX4_BINARY_OUTPUT} ${PX4_BINARY_DIR}/${PX4_CONFIG}.bin
+		COMMAND $ENV{SIGNING_TOOL} $ENV{SIGNING_ARGS} ${PX4_BINARY_OUTPUT} ${PLAT_BINARY_DIR}/${PX4_CONFIG}.bin
 		DEPENDS ${PX4_BINARY_OUTPUT}
 		WORKING_DIRECTORY ${PX4_SOURCE_DIR}
 	)
@@ -181,10 +181,10 @@ if (NOT CONFIG_BUILD_FLAT)
 		gcc
 		)
 
-	if (config_romfs_root)
-		add_subdirectory(${PX4_SOURCE_DIR}/ROMFS ${PX4_BINARY_DIR}/ROMFS)
-		target_link_libraries(px4_kernel PRIVATE romfs)
-	endif()
+	#if (config_romfs_root)
+	#	add_subdirectory(${PX4_SOURCE_DIR}/ROMFS ${PX4_BINARY_DIR}/ROMFS)
+	#	target_link_libraries(px4_kernel PRIVATE romfs)
+	#endif()
 
 	target_link_libraries(px4_kernel PRIVATE -Wl,--print-memory-usage)
 
@@ -284,10 +284,10 @@ else()
 
 	target_link_libraries(px4 PRIVATE ${module_libraries})
 
-	if(config_romfs_root)
-		add_subdirectory(${PX4_SOURCE_DIR}/ROMFS ${PX4_BINARY_DIR}/ROMFS)
-		target_link_libraries(px4 PRIVATE romfs)
-	endif()
+	#if(config_romfs_root)
+	#	add_subdirectory(${PX4_SOURCE_DIR}/ROMFS ${PLAT_BINARY_DIR}/ROMFS)
+	#	target_link_libraries(px4 PRIVATE romfs)
+	#endif()
 
 	add_custom_command(OUTPUT ${PX4_BINARY_OUTPUT}
 		COMMAND ${CMAKE_OBJCOPY} -O binary ${PX4_BINARY_DIR_REL}/${FW_NAME} ${PX4_BINARY_OUTPUT}
@@ -363,15 +363,15 @@ add_custom_target(weak_symbols
 # generate bootloader.elf and copy to top level build directory
 if(NOT ("${PX4_BOARD_LABEL}" STREQUAL "bootloader") AND (EXISTS "${PX4_BOARD_DIR}/extras/${PX4_BOARD_VENDOR}_${PX4_BOARD_MODEL}_bootloader.bin"))
 	add_custom_command(
-		OUTPUT ${PX4_BINARY_DIR}/${PX4_BOARD_VENDOR}_${PX4_BOARD_MODEL}_bootloader.elf
+		OUTPUT ${PLAT_BINARY_DIR}/${PX4_BOARD_VENDOR}_${PX4_BOARD_MODEL}_bootloader.elf
 		COMMAND
 			${CMAKE_OBJCOPY} -I binary -O elf32-little --change-section-address .data=0x08000000
 				${PX4_BOARD_DIR}/extras/${PX4_BOARD_VENDOR}_${PX4_BOARD_MODEL}_bootloader.bin
-				${PX4_BINARY_DIR}/${PX4_BOARD_VENDOR}_${PX4_BOARD_MODEL}_bootloader.elf
+				${PLAT_BINARY_DIR}/${PX4_BOARD_VENDOR}_${PX4_BOARD_MODEL}_bootloader.elf
 		DEPENDS ${PX4_BOARD_DIR}/extras/${PX4_BOARD_VENDOR}_${PX4_BOARD_MODEL}_bootloader.bin
-		WORKING_DIRECTORY ${PX4_BINARY_DIR}
+		WORKING_DIRECTORY ${PLAT_BINARY_DIR}
 	)
-	add_custom_target(bootloader_elf DEPENDS ${PX4_BINARY_DIR}/${PX4_BOARD_VENDOR}_${PX4_BOARD_MODEL}_bootloader.elf)
+	add_custom_target(bootloader_elf DEPENDS ${PLAT_BINARY_DIR}/${PX4_BOARD_VENDOR}_${PX4_BOARD_MODEL}_bootloader.elf)
 endif()
 
 
@@ -479,10 +479,11 @@ if(NOT NUTTX_DIR MATCHES "external")
 	if(DEBUG_SVD_FILE_PATH)
 		message(STATUS "Found SVD: ${DEBUG_SVD_FILE_PATH}")
 	endif()
-
+    #[[
 	if(DEBUG_DEVICE)
 		configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Debug/launch.json.in ${PX4_SOURCE_DIR}/.vscode/launch.json @ONLY)
 	endif()
+	]]
 endif()
 
 #[[

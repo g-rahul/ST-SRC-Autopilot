@@ -44,14 +44,18 @@ if(NOT CONFIG)
 endif()
 ]]
 
+message("Passed Config: ${CONFIG}")
+message("PX4_CONFIG_FILE: ${PX4_CONFIG_FILE}")
+message("PX4_SOURCE_DIR: ${PX4_SOURCE_DIR}")
 if(NOT PX4_CONFIG_FILE)
 
 	file(GLOB_RECURSE board_configs
 		RELATIVE "${PX4_SOURCE_DIR}/boards"
-		"boards/*.px4board"
+		"*.px4board"
 		)
-
+	message("board_configs: ${board_configs}")
 	foreach(filename ${board_configs})
+	    message(${filename})
 		# parse input CONFIG into components to match with existing in tree configs
 		#  the platform prefix (eg nuttx_) is historical, and removed if present
 		string(REPLACE ".px4board" "" filename_stripped ${filename})
